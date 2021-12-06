@@ -1,6 +1,7 @@
 import json
 import flask
 from flask_restful import Resource, Api
+from Constants import Constants
 from exception.IllegalArgumentException import IllegalArgumentException
 from service.GetCoordinatesService import GetCoordinates
 from flask import request
@@ -10,7 +11,7 @@ api = Api(app)
 
 class GeoAPI(Resource):
     def get(self):
-        return getCoordinates.getCoordinates()
+        return getCoordinates.getCoordinates(Constants.ADDRESS_FOR_TASK_FILE_PATH)
 
     def post(self):
         data = json.loads(flask.request.data.decode('utf-8'))

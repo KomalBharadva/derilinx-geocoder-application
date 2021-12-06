@@ -1,5 +1,7 @@
 import pandas as pd
+from Constants import Constants
 from dto.addressOutputDTO import AddressOutputDTO
+from exception.FileNotFoundException import FileNotFoundException
 from exception.NotFoundException import NotFoundException
 from service.PrepareDatabaseService import PrepareDatabase
 
@@ -10,11 +12,11 @@ class GetCoordinates():
     townlandsDF = pd.DataFrame()
 
     def __init__(self):
-        self.countyDF = self.prepareDatabase.getCountyCoordinates()
-        self.townlandsDF = self.prepareDatabase.getTownlandsCoordinates()
+        self.countyDF = self.prepareDatabase.getCountyCoordinates(Constants.COUNTY_FILE_PATH)
+        self.townlandsDF = self.prepareDatabase.getTownlandsCoordinates(Constants.TOWNLOADS_FILE_PATH)
 
-    def getCoordinates(self):
-        rawAddressDF = self.__readAddress()
+    def getCoordinates(self, filePath):
+        rawAddressDF = self.__readAddress(filePath)
         finalAddressCoordinates = []
         for index, eachAddress in rawAddressDF.iterrows():
             addressOutputDTO = AddressOutputDTO()
@@ -44,8 +46,11 @@ class GetCoordinates():
         addressOutputDTO.setLong(tempCoordinates['Y'].values[0])
         return addressOutputDTO.toJSON()
 
-    def __readAddress(self):
-        addressDF = pd.read_csv('./files/addresses_for_task.csv')
+    def __readAddress(self, filePath):
+        try:
+            addressDF = pd.read_csv(filePath)
+        except:
+            raise FileNotFoundException("File with filePath: '"+filePath+"' is not found")
         return addressDF
 
     def __getAddressList(self, givenAddressString):
